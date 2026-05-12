@@ -49,7 +49,7 @@ function Home() {
             className="w-full outline-none px-4 py-3 border  border-black/10 rounded-lg"
           />
 
-          <button className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 transition text-white px-8 py-3 rounded-lg">
+          <button className="w-full md:w-auto bg-blue-700 hover:bg-blue-700 transition text-white px-8 py-3 rounded-lg">
             Search
           </button>
 
