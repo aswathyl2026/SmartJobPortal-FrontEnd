@@ -31,7 +31,7 @@ const dispatch=useDispatch()
      // console.log(result.data.data);
      dispatch(loginSuccess({
       token:result.data.data.token,
-      user:JSON.stringify(result.data.data.user)
+      user:result.data.data.user
      }))
      
      toast.success(`welcome ${result.data.data.user.username}`)

@@ -1,0 +1,352 @@
+import React, { useState } from 'react'
+
+import { createJobAPI } from '../../services/allAPI'
+
+function AddJob({ setShowModal, getAllJobs }) {
+
+    const [jobData, setJobData] = useState({
+
+        title: "",
+        company: "",
+        location: "",
+        salary: "",
+        description: "",
+        requirements: "",
+        jobtype: "full-time"
+
+    })
+
+
+
+    // HANDLE CHANGE
+
+    const handleChange = (e) => {
+
+        setJobData({
+
+            ...jobData,
+
+            [e.target.name]: e.target.value
+
+        })
+
+    }
+
+
+
+    // ADD JOB
+
+    const handleAddJob = async () => {
+
+        const {
+
+            title,
+            company,
+            location,
+            description
+
+        } = jobData
+
+        if (
+
+            !title ||
+
+            !company ||
+
+            !location ||
+
+            !description
+
+        ) {
+
+            alert("Please fill required fields")
+
+            return
+
+        }
+
+        const token = sessionStorage.getItem("token")
+
+        const reqHeader = {
+
+            Authorization: `Bearer ${token}`
+
+        }
+
+        const result = await createJobAPI(
+
+            jobData,
+
+            reqHeader
+
+        )
+
+        if (result.status === 201) {
+
+            alert("Job Added Successfully")
+
+            setShowModal(false)
+
+            getAllJobs()
+
+        }
+
+    }
+
+
+
+    return (
+
+        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
+
+            <div className='bg-white w-full max-w-3xl rounded-2xl shadow-xl overflow-hidden'>
+
+                {/* HEADER */}
+
+                <div className='bg-blue-600 text-white p-5 flex items-center justify-between'>
+
+                    <h2 className='text-xl md:text-2xl font-bold'>
+
+                        Add New Job
+
+                    </h2>
+
+                    <button
+                        onClick={() => setShowModal(false)}
+                        className='text-2xl font-bold'
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+
+                {/* BODY */}
+
+                <div className='p-5 md:p-8 max-h-[80vh] overflow-y-auto'>
+
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+
+                        {/* TITLE */}
+
+                        <div>
+
+                            <label className='block mb-2 font-medium'>
+
+                                Job Title
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name='title'
+                                value={jobData.title}
+                                onChange={handleChange}
+                                placeholder='Frontend Developer'
+                                className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
+                            />
+
+                        </div>
+
+
+
+                        {/* COMPANY */}
+
+                        <div>
+
+                            <label className='block mb-2 font-medium'>
+
+                                Company
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name='company'
+                                value={jobData.company}
+                                onChange={handleChange}
+                                placeholder='Google'
+                                className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
+                            />
+
+                        </div>
+
+
+
+                        {/* LOCATION */}
+
+                        <div>
+
+                            <label className='block mb-2 font-medium'>
+
+                                Location
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name='location'
+                                value={jobData.location}
+                                onChange={handleChange}
+                                placeholder='Bangalore'
+                                className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
+                            />
+
+                        </div>
+
+
+
+                        {/* SALARY */}
+
+                        <div>
+
+                            <label className='block mb-2 font-medium'>
+
+                                Salary
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name='salary'
+                                value={jobData.salary}
+                                onChange={handleChange}
+                                placeholder='5 LPA'
+                                className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
+                            />
+
+                        </div>
+
+
+
+                        {/* JOB TYPE */}
+
+                        <div>
+
+                            <label className='block mb-2 font-medium'>
+
+                                Job Type
+
+                            </label>
+
+                            <select
+                                name='jobtype'
+                                value={jobData.jobtype}
+                                onChange={handleChange}
+                                className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
+                            >
+
+                                <option value="full-time">
+
+                                    Full Time
+
+                                </option>
+
+                                <option value="part-time">
+
+                                    Part Time
+
+                                </option>
+
+                                <option value="internship">
+
+                                    Internship
+
+                                </option>
+
+                                <option value="remote">
+
+                                    Remote
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        {/* REQUIREMENTS */}
+
+                        <div>
+
+                            <label className='block mb-2 font-medium'>
+
+                                Requirements
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name='requirements'
+                                value={jobData.requirements}
+                                onChange={handleChange}
+                                placeholder='React, Node.js'
+                                className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
+                            />
+
+                        </div>
+
+                    </div>
+
+
+
+                    {/* DESCRIPTION */}
+
+                    <div className='mt-5'>
+
+                        <label className='block mb-2 font-medium'>
+
+                            Job Description
+
+                        </label>
+
+                        <textarea
+                            name='description'
+                            value={jobData.description}
+                            onChange={handleChange}
+                            rows={5}
+                            placeholder='Enter job description'
+                            className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
+                        />
+
+                    </div>
+
+
+
+                    {/* BUTTONS */}
+
+                    <div className='flex flex-col sm:flex-row gap-4 mt-8'>
+
+                        <button
+                            onClick={handleAddJob}
+                            className='bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg w-full'
+                        >
+
+                            Add Job
+
+                        </button>
+
+                        <button
+                            onClick={() => setShowModal(false)}
+                            className='bg-gray-300 hover:bg-gray-400 text-black py-3 px-6 rounded-lg w-full'
+                        >
+
+                            Cancel
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    )
+
+}
+
+export default AddJob

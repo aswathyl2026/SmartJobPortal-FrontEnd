@@ -133,7 +133,6 @@ function Register() {
                 onChange={formik.handleChange} onBlur={formik.handleBlur} name="role">
                 <option value="">Select Role</option>
                 <option value="candidate">Candidate</option>
-                <option value="admin">Admin</option>
                 <option value="recruiter">Recruiter</option>
               </select>
             </div>

@@ -11,6 +11,10 @@ import JobList from './pages/candidate/components/JobList'
 import JobCard from './pages/candidate/components/JobCard'
 import MyApplication from './pages/candidate/pages/MyApplication'
 import UploadDetails from './pages/candidate/pages/UploadDetails'
+import MyJobs from './pages/recruiter/MyJobs'
+import AddJob from './pages/recruiter/AddJob'
+import Applicant from './pages/recruiter/Applicant'
+import Profile from './pages/recruiter/Profile'
 
 
 function App() {
@@ -26,8 +30,12 @@ return(
      <Route path='/jobs' element={<JobList/>}/>
 
      <Route path='/admin' element={<AdminDashboard/>}/>
-    <Route path='/recruiter' element={<RecruiterDashboard/>}/>
 
+    <Route path='/recruiter' element={<RecruiterDashboard/>}/>
+     <Route path='/addJob' element={<AddJob/>}/>
+     <Route path='/myjobs' element={<MyJobs/>}/>
+     <Route path='/applicant' element={<Applicant/>}/>
+     <Route path='/profile' element={<Profile/>}/>
 
     <Route path='/candidate' element={<CandidateDashboard/>}/>
     <Route path='/job/:id' element={<JobCard/>}/>

@@ -1,21 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import { allMyApplicationAPI } from '../../../services/allAPI';
 import Header from '../components/Header'
+
 function MyApplication() {
+
     const [allApplication, setAllApplication] = useState([])
-    console.log(allApplication);
 
     useEffect(() => {
         getApplications()
     }, [])
+
     const getApplications = async () => {
+
         const result = await allMyApplicationAPI()
-        if (result.status == 200) {
+
+        if (result.status === 200) {
             setAllApplication(result.data.data)
         }
+
     }
+
     const getStatusStyle = (status) => {
+
         switch (status) {
+
             case "Applied":
                 return "bg-blue-100 text-blue-700"
 
@@ -27,11 +35,15 @@ function MyApplication() {
 
             default:
                 return "bg-gray-100 text-gray-700"
+
         }
+
     }
 
     return (
+
         <>
+        
             <Header />
 
             <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -74,42 +86,57 @@ function MyApplication() {
                             <tbody>
 
                                 {
-                                    allApplication?.length>0 ?
-                                    allApplication?.map((item) => (
+                                    allApplication?.length > 0 ?
 
-                                        <tr
-                                            key={item?.id}
-                                            className="border-t hover:bg-gray-50 transition"
-                                        >
+                                        allApplication.map((item) => (
 
-                                            <td className="p-5">
-                                                {item?.job.title}
-                                            </td>
+                                            <tr
+                                                key={item?._id}
+                                                className="border-t hover:bg-gray-50 transition"
+                                            >
 
-                                            <td className="p-5">
-                                                {item?.job.company}
-                                            </td>
+                                                <td className="p-5">
+                                                    {item?.job?.title || "Job Removed"}
+                                                </td>
 
-                                            <td className="p-5">
-                                               { new Date(item?.createdAt).toLocaleDateString()}
-                                            </td>
+                                                <td className="p-5">
+                                                    {item?.job?.company || "N/A"}
+                                                </td>
 
-                                            <td className="p-5">
+                                                <td className="p-5">
+                                                    {
+                                                        item?.createdAt
+                                                            ? new Date(item.createdAt).toLocaleDateString()
+                                                            : "N/A"
+                                                    }
+                                                </td>
 
-                                                <span
-                                                    className={`px-4 py-1 rounded-full text-sm font-medium ${getStatusStyle(item?.status)}`}
-                                                >
-                                                    {item?.status}
-                                                </span>
+                                                <td className="p-5">
 
+                                                    <span
+                                                        className={`px-4 py-1 rounded-full text-sm font-medium ${getStatusStyle(item?.status)}`}
+                                                    >
+                                                        {item?.status}
+                                                    </span>
+
+                                                </td>
+
+                                            </tr>
+
+                                        ))
+
+                                        :
+
+                                        <tr>
+
+                                            <td
+                                                colSpan="4"
+                                                className="text-center p-5 text-gray-500"
+                                            >
+                                                You have not applied to any jobs
                                             </td>
 
                                         </tr>
-
-                                    ))
-                                    :
-                                    <tr>You are not applied</tr>
-
                                 }
 
                             </tbody>
@@ -121,37 +148,47 @@ function MyApplication() {
                     {/* Mobile Cards */}
                     <div className="md:hidden space-y-4">
 
-                        { allApplication?.length>0 ?
-                            allApplication.map((item) => (
+                        {
+                            allApplication?.length > 0 ?
 
-                                <div
-                                    key={item.id}
-                                    className="bg-white shadow rounded-2xl p-5"
-                                >
+                                allApplication.map((item) => (
 
-                                    <h3 className="text-lg font-semibold mb-2">
-                                        {item.job.title}
-                                    </h3>
-
-                                    <p className="text-gray-600 mb-2">
-                                        {item.job.company}
-                                    </p>
-
-                                    <p className="text-sm text-gray-500 mb-4">
-                                       { new Date(item?.createdAt).toLocaleDateString()}
-                                    </p>
-
-                                    <span
-                                        className={`px-4 py-1 rounded-full text-sm font-medium ${getStatusStyle(item?.status)}`}
+                                    <div
+                                        key={item?._id}
+                                        className="bg-white shadow rounded-2xl p-5"
                                     >
-                                        {item?.status}
-                                    </span>
 
+                                        <h3 className="text-lg font-semibold mb-2">
+                                            {item?.job?.title || "Job Removed"}
+                                        </h3>
+
+                                        <p className="text-gray-600 mb-2">
+                                            {item?.job?.company || "N/A"}
+                                        </p>
+
+                                        <p className="text-sm text-gray-500 mb-4">
+                                            {
+                                                item?.createdAt
+                                                    ? new Date(item.createdAt).toLocaleDateString()
+                                                    : "N/A"
+                                            }
+                                        </p>
+
+                                        <span
+                                            className={`px-4 py-1 rounded-full text-sm font-medium ${getStatusStyle(item?.status)}`}
+                                        >
+                                            {item?.status}
+                                        </span>
+
+                                    </div>
+
+                                ))
+
+                                :
+
+                                <div className="bg-white shadow rounded-2xl p-5 text-center text-gray-500">
+                                    You have not applied to any jobs
                                 </div>
-
-                            ))
-                            :
-                             <tr>You are not applied</tr>
                         }
 
                     </div>
@@ -161,7 +198,9 @@ function MyApplication() {
             </div>
 
         </>
+
     )
+
 }
 
 export default MyApplication
