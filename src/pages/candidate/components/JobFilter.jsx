@@ -1,155 +1,140 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-function JobFilter() {
+function JobFilter({ onFilter }) {
+
+  const [filters, setFilters] = useState({
+    keyword: "",
+    location: "",
+    jobType: [],
+    salary: 100000
+  })
+
+  const handleChange = (e) => {
+    setFilters({ ...filters, [e.target.name]: e.target.value })
+  }
+
+  const handleJobType = (e) => {
+    const { value, checked } = e.target
+    let updated = [...filters.jobType]
+    if (checked) {
+      updated.push(value)
+    } else {
+      updated = updated.filter(item => item !== value)
+    }
+    setFilters({ ...filters, jobType: updated })
+  }
+
+  const applyFilters = () => {
+    onFilter(filters)
+  }
+
+  const resetFilters = () => {
+    const reset = { keyword: "", location: "", jobType: [], salary: 100000 }
+    setFilters(reset)
+    onFilter(reset)
+  }
 
   return (
+    <div className="w-full bg-white shadow-lg rounded-xl p-5">
 
-    <div className='w-full bg-white shadow-lg rounded-xl p-5'>
+      <h2 className="text-2xl font-semibold border-b pb-3 mb-5">Filters</h2>
 
-      {/* Heading */}
-      <div className="border-b pb-3 mb-5">
-
-        <h2 className="text-2xl md:text-3xl font-semibold">
-          Filters
-        </h2>
-
+      {/* KEYWORD */}
+      <div className="mb-4">
+        <h3 className="font-bold mb-2">Keyword</h3>
+        <input
+          name="keyword"
+          value={filters.keyword}
+          onChange={handleChange}
+          className="border w-full p-2 rounded"
+          placeholder="Enter keyword"
+        />
       </div>
 
-      {/* Filter Content */}
-      <div className="flex flex-col gap-6">
+      {/* LOCATION */}
+      <div className="mb-4">
+        <h3 className="font-bold mb-2">Location</h3>
+        <select
+          name="location"
+          value={filters.location}
+          onChange={handleChange}
+          className="border w-full p-2 rounded"
+        >
+          <option value="">Select</option>
+          <option value="Trivandrum">Trivandrum</option>
+          <option value="Kochi">Kochi</option>
+          <option value="Calicut">Calicut</option>
+        </select>
+      </div>
 
-        {/* Keyword */}
-        <div>
+      {/* JOB TYPE — values must match exactly what's in MongoDB */}
+      <div className="mb-4">
+        <h3 className="font-bold mb-2">Job Type</h3>
+        <div className="flex flex-col gap-2">
 
-          <h3 className="text-lg font-bold mb-2">
-            Keyword
-          </h3>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              value="full-time"     // ✅ matches DB value
+              checked={filters.jobType.includes("full-time")}
+              onChange={handleJobType}
+            />
+            Full Time
+          </label>
 
-          <input
-            type="text"
-            className="border border-black/10 rounded-lg w-full px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder='Enter keyword'
-          />
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              value="part-time"     // ✅ matches DB value
+              checked={filters.jobType.includes("part-time")}
+              onChange={handleJobType}
+            />
+            Part Time
+          </label>
 
-        </div>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              value="remote"        // ✅ matches DB value (AddJob saves "remote")
+              checked={filters.jobType.includes("remote")}
+              onChange={handleJobType}
+            />
+            Work From Home
+          </label>
 
-        {/* Location */}
-        <div>
-
-          <h3 className="text-lg font-bold mb-2">
-            Location
-          </h3>
-
-          <select
-            className="border border-black/10 rounded-lg w-full px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-          >
-
-            <option value="">
-              Select Location
-            </option>
-
-            <option value="trivandrum">
-              Trivandrum
-            </option>
-
-            <option value="kochi">
-              Kochi
-            </option>
-
-            <option value="calicut">
-              Calicut
-            </option>
-
-          </select>
-
-        </div>
-
-        {/* Job Type */}
-        <div>
-
-          <h3 className="text-lg font-bold mb-3">
-            Job Type
-          </h3>
-
-          <div className="flex flex-col gap-3">
-
-            <div className="flex items-center gap-2">
-
-              <input
-                type="checkbox"
-                id="fulltime"
-                className="w-4 h-4"
-              />
-
-              <label htmlFor="fulltime">
-                Full Time
-              </label>
-
-            </div>
-
-            <div className="flex items-center gap-2">
-
-              <input
-                type="checkbox"
-                id="parttime"
-                className="w-4 h-4"
-              />
-
-              <label htmlFor="parttime">
-                Part Time
-              </label>
-
-            </div>
-
-            <div className="flex items-center gap-2">
-
-              <input
-                type="checkbox"
-                id="wfh"
-                className="w-4 h-4"
-              />
-
-              <label htmlFor="wfh">
-                Work From Home
-              </label>
-
-            </div>
-
-          </div>
+        
 
         </div>
+      </div>
 
-        {/* Salary Range */}
-        <div>
+      {/* SALARY */}
+      <div className="mb-4">
+        <h3 className="font-bold mb-2">Salary</h3>
+        <input
+          type="range"
+          min="10000"
+          max="100000"
+          value={filters.salary}
+          onChange={(e) => setFilters({ ...filters, salary: e.target.value })}
+          className="w-full"
+        />
+        <p className="text-sm text-gray-500">Max: ₹{filters.salary}</p>
+      </div>
 
-          <h3 className="text-lg font-bold mb-3">
-            Salary Range
-          </h3>
-
-          <input
-            type="range"
-            min="10000"
-            max="100000"
-            className="w-full"
-          />
-
-          <div className="flex justify-between text-sm text-gray-500 mt-2">
-
-            <span>₹10k</span>
-
-            <span>₹100k</span>
-
-          </div>
-
-        </div>
-
-        {/* Apply Button */}
+      {/* BUTTONS */}
+      <div className="flex gap-3">
         <button
-          className="bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-lg font-semibold transition duration-300"
+          onClick={applyFilters}
+          className="bg-blue-700 text-white w-full py-2 rounded hover:bg-blue-800 transition"
         >
           Apply Filters
         </button>
-
+        <button
+          onClick={resetFilters}
+          className="bg-gray-200 text-gray-700 w-full py-2 rounded hover:bg-gray-300 transition"
+        >
+          Reset
+        </button>
       </div>
 
     </div>

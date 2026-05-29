@@ -1,621 +1,240 @@
-import { useState, useEffect } from "react";
-import React from 'react'
-import { useNavigate } from "react-router-dom";
-import { createJobAPI } from '../../services/allAPI'
-
-const navItems = [
-  { label: "Dashboard", icon: "⊞", url: "/recruiter" },
-  { label: "My Jobs", icon: "💼", url: "/myjobs" },
-  { label: "Applicants", icon: "👥", url: "/applicant" },
-  { label: "Profile", icon: "👤", url: "/profile" },
-];
+import { useState, useEffect } from "react"
+import React from "react"
+import { useNavigate } from "react-router-dom"
+import { createJobAPI, getAIJobAPI } from "../../services/allAPI"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import RecruiterLayout from "./RecruiterLayout"
+import { useSelector } from "react-redux"
 
 function AddJob() {
 
-  const navigate = useNavigate()
+    const navigate = useNavigate()
+    const token = useSelector((state) => state.auth.token)
 
-  const [activeNav, setActiveNav] = useState("Dashboard");
+    const [loadingAI, setLoadingAI] = useState(false)
 
-  const [sidebarOpen, setSidebarOpen] = useState(
-    window.innerWidth > 768
-  );
-
-  const user = JSON.parse(sessionStorage.getItem("user"));
-
-
-
-  // JOB STATE
-
-  const [jobData, setJobData] = useState({
-
-    title: "",
-    company: "",
-    location: "",
-    salary: "",
-    description: "",
-    requirements: "",
-    jobtype: "full-time"
-
-  })
-
-
-
-  // HANDLE CHANGE
-
-  const handleChange = (e) => {
-
-    setJobData({
-
-      ...jobData,
-
-      [e.target.name]: e.target.value
-
-    })
-
-  }
-
-
-
-  // ADD JOB
-
-  const handleAddJob = async () => {
-
-    const {
-
-      title,
-      company,
-      location,
-      description
-
-    } = jobData
-
-    if (
-
-      !title ||
-
-      !company ||
-
-      !location ||
-
-      !description
-
-    ) {
-
-      alert("Please fill required fields")
-
-      return
-
-    }
-
-    const token = sessionStorage.getItem("token")
-
-    const reqHeader = {
-
-      Authorization: `Bearer ${token}`
-
-    }
-
-    const result = await createJobAPI(
-
-      jobData,
-
-      reqHeader
-
-    )
-
-    if (result.status === 201) {
-
-      alert("Job Added Successfully")
-
-      setJobData({
-
+    const [jobData, setJobData] = useState({
         title: "",
         company: "",
         location: "",
         salary: "",
         description: "",
         requirements: "",
-        jobtype: "full-time"
+        jobtype: "full-time",
+    })
 
-      })
-
-      navigate('/myjobs')
-
+    const handleChange = (e) => {
+        setJobData({ ...jobData, [e.target.name]: e.target.value })
     }
 
-  }
-
-
-
-  // RESPONSIVE SIDEBAR
-
-  useEffect(() => {
-
-    const handleResize = () => {
-
-      if (window.innerWidth < 768) {
-
-        setSidebarOpen(false)
-
-      }
-
-      else {
-
-        setSidebarOpen(true)
-
-      }
-
+    // AI GENERATION — sends all fields for better context
+    const getAIJob = async () => {
+    if (!jobData.title) {
+        toast.error("Enter job title first")
+        return
     }
 
-    window.addEventListener("resize", handleResize)
+    setLoadingAI(true)
+    try {
+        const result = await getAIJobAPI({
+            title: jobData.title,
+            company: jobData.company,
+            location: jobData.location,
+            requirements: jobData.requirements
+        })
 
-    return () =>
+        console.log("FULL RESULT:", result)        // ← ADD
+        console.log("RESULT.DATA:", result?.data)  // ← ADD
 
-      window.removeEventListener(
+        const content = result?.data?.content
 
-        "resize",
+        if (content) {
+            setJobData((prev) => ({ ...prev, description: content }))
+            toast.success("AI Description Generated!")
+        } else {
+            toast.error("No AI content received")
+        }
+    } catch (err) {
+        console.error("ERROR:", err?.response?.data || err.message)
+        toast.error("AI generation failed")
+    } finally {
+        setLoadingAI(false)
+    }
+}
 
-        handleResize
+    // ADD JOB
+    const handleAddJob = async () => {
+        const { title, company, location, description } = jobData
 
-      )
+        if (!title || !company || !location || !description) {
+            toast.error("Please fill required fields")
+            return
+        }
 
-  }, [])
-
-
-
-  return (
-
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
-        background: "#F5F6FA",
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
-
-      {/* MOBILE OVERLAY */}
-
-      {
-        sidebarOpen && window.innerWidth < 768 && (
-
-          <div
-            onClick={() => setSidebarOpen(false)}
-            style={{
-              position: "fixed",
-              inset: 0,
-              background: "rgba(0,0,0,0.4)",
-              zIndex: 5,
-            }}
-          />
-
-        )
-      }
-
-
-
-      {/* SIDEBAR */}
-
-      <aside
-        style={{
-          width: sidebarOpen ? 220 : 0,
-          background: "#FFFFFF",
-          borderRight: "1px solid #EAEDF2",
-          display: "flex",
-          flexDirection: "column",
-          transition: "0.3s",
-          overflow: "hidden",
-          flexShrink: 0,
-          boxShadow: "2px 0 12px rgba(0,0,0,0.04)",
-          position: window.innerWidth < 768 ? "fixed" : "relative",
-          height: "100vh",
-          zIndex: 10,
-        }}
-      >
-
-        {/* LOGO */}
-
-        <div
-          className="bg-blue-800"
-          style={{
-            padding: "20px",
-            borderBottom: "1px solid #F0F2F7",
-          }}
-        >
-
-          <div
-            className="flex items-center"
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-
-            <img
-              style={{
-                width: window.innerWidth < 768 ? 50 : 70,
-                height: window.innerWidth < 768 ? 50 : 70,
-              }}
-              src="/logo2.png"
-              alt="logo"
-            />
-
-            <h1
-              style={{
-                fontSize: window.innerWidth < 768 ? 18 : 24,
-                fontWeight: "bold",
-                marginLeft: 10,
-                color: "#fff",
-              }}
-            >
-
-              SMART
-
-              <span style={{ color: "#60A5FA" }}>
-                {" "}JOB
-              </span>
-
-            </h1>
-
-          </div>
-
-        </div>
-
-
-
-        {/* NAVIGATION */}
-
-        <nav style={{ padding: 16, flex: 1 }}>
-
-          {
-            navItems.map((item) => {
-
-              const isActive = activeNav === item.label;
-
-              return (
-
-                <button
-                  key={item.label}
-
-                  onClick={() => {
-
-                    setActiveNav(item.label)
-
-                    navigate(item.url)
-
-                    if (window.innerWidth < 768) {
-
-                      setSidebarOpen(false)
-
-                    }
-
-                  }}
-
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: 10,
-                    border: "none",
-                    background: isActive
-                      ? "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)"
-                      : "transparent",
-                    color: isActive ? "#fff" : "#6B7280",
-                    fontWeight: 600,
-                    fontSize: 14,
-                    cursor: "pointer",
-                    marginBottom: 6,
-                  }}
-                >
-
-                  <span style={{ fontSize: 18 }}>
-                    {item.icon}
-                  </span>
-
-                  <span>
-                    {item.label}
-                  </span>
-
-                </button>
-
-              )
-
+        try {
+            const result = await createJobAPI(jobData, {
+                Authorization: `Bearer ${token}`
             })
-          }
 
-        </nav>
+            if (result.status === 201) {
+                toast.success("Job Added Successfully")
+                setJobData({
+                    title: "", company: "", location: "",
+                    salary: "", description: "", requirements: "", jobtype: "full-time"
+                })
+                setTimeout(() => navigate("/myjobs"), 1200)
+            } else {
+                toast.error("Failed to add job")
+            }
+        } catch (err) {
+            toast.error("Server error while adding job")
+        }
+    }
 
+    return (
+        <RecruiterLayout>
+            <ToastContainer position="top-right" autoClose={2000} />
 
+            <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
 
-        {/* LOGOUT */}
+                {/* HEADER */}
+                <div className="bg-blue-600 text-white p-5 flex items-center justify-between">
+                    <h2 className="text-xl font-bold">Add New Job</h2>
+                    <button onClick={() => navigate("/myjobs")} className="text-2xl font-bold">×</button>
+                </div>
 
-        <div style={{ padding: 16 }}>
+                {/* FORM */}
+                <div className="p-6 md:p-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          <button
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              width: "100%",
-              padding: "12px 14px",
-              borderRadius: 10,
-              border: "none",
-              background: "transparent",
-              color: "#EF4444",
-              fontWeight: 600,
-              fontSize: 14,
-              cursor: "pointer",
-            }}
-          >
+                        <div className="flex flex-col gap-1">
+                            <label className="font-medium text-sm">Job Title <span className="text-red-500">*</span></label>
+                            <input
+                                name="title"
+                                value={jobData.title}
+                                onChange={handleChange}
+                                placeholder="e.g. React Developer"
+                                className="border rounded-lg p-3 outline-none focus:border-blue-500"
+                            />
+                        </div>
 
-            <span style={{ fontSize: 18 }}>
-              ⏻
-            </span>
+                        <div className="flex flex-col gap-1">
+                            <label className="font-medium text-sm">Company <span className="text-red-500">*</span></label>
+                            <input
+                                name="company"
+                                value={jobData.company}
+                                onChange={handleChange}
+                                placeholder="e.g. Google"
+                                className="border rounded-lg p-3 outline-none focus:border-blue-500"
+                            />
+                        </div>
 
-            Logout
+                        <div className="flex flex-col gap-1">
+                            <label className="font-medium text-sm">Location <span className="text-red-500">*</span></label>
+                            <input
+                                name="location"
+                                value={jobData.location}
+                                onChange={handleChange}
+                                placeholder="e.g. Bangalore"
+                                className="border rounded-lg p-3 outline-none focus:border-blue-500"
+                            />
+                        </div>
 
-          </button>
+                        <div className="flex flex-col gap-1">
+                            <label className="font-medium text-sm">Salary</label>
+                            <input
+                                name="salary"
+                                value={jobData.salary}
+                                onChange={handleChange}
+                                placeholder="e.g. 5 LPA"
+                                className="border rounded-lg p-3 outline-none focus:border-blue-500"
+                            />
+                        </div>
 
-        </div>
+                        <div className="flex flex-col gap-1">
+                            <label className="font-medium text-sm">Job Type</label>
+                            <select
+                                name="jobtype"
+                                value={jobData.jobtype}
+                                onChange={handleChange}
+                                className="border rounded-lg p-3 outline-none focus:border-blue-500"
+                            >
+                                <option value="full-time">Full Time</option>
+                                <option value="part-time">Part Time</option>
+                                <option value="remote">Work From Home</option>
+                                
+                            </select>
+                        </div>
 
-      </aside>
+                        <div className="flex flex-col gap-1">
+                            <label className="font-medium text-sm">Requirements</label>
+                            <input
+                                name="requirements"
+                                value={jobData.requirements}
+                                onChange={handleChange}
+                                placeholder="e.g. React, Node.js"
+                                className="border rounded-lg p-3 outline-none focus:border-blue-500"
+                            />
+                        </div>
 
+                    </div>
 
+                    {/* AI BUTTON */}
+                    <div className="flex justify-end mt-4">
+                        <button
+                            type="button"
+                            onClick={getAIJob}
+                            disabled={loadingAI}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold transition
+                                ${loadingAI ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"}`}
+                        >
+                            {loadingAI ? (
+                                <>
+                                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"/>
+                                        <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8z"/>
+                                    </svg>
+                                    Generating...
+                                </>
+                            ) : "✨ Generate description with AI"}
+                        </button>
+                    </div>
 
-      {/* MAIN */}
+                    {/* DESCRIPTION */}
+                    <div className="flex flex-col gap-1 mt-3">
+                        <label className="font-medium text-sm">Job Description <span className="text-red-500">*</span></label>
+                        <textarea
+                            name="description"
+                            value={jobData.description}
+                            onChange={handleChange}
+                            placeholder="Job description will appear here or type manually..."
+                            className="border rounded-lg p-3 outline-none focus:border-blue-500 resize-none"
+                            rows={7}
+                        />
+                    </div>
 
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          overflow: "hidden",
-        }}
-      >
+                    {/* BUTTONS */}
+                    <div className="flex gap-4 mt-6">
+                        <button
+                            onClick={handleAddJob}
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
+                        >
+                            Add Job
+                        </button>
+                        <button
+                            onClick={() => navigate("/myjobs")}
+                            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-lg font-semibold transition"
+                        >
+                            Cancel
+                        </button>
+                    </div>
 
-        {/* TOPBAR */}
-
-    
-
-
-
-        {/* CONTENT */}
-
-        <div className="flex justify-center p-4 md:p-10 overflow-y-auto">
-
-          <div className='bg-white w-full max-w-4xl rounded-2xl shadow-xl overflow-hidden'>
-
-            {/* HEADER */}
-
-            <div className='bg-blue-600 text-white p-5 flex items-center justify-between'>
-
-              <h2 className='text-xl md:text-2xl font-bold'>
-
-                Add New Job
-
-              </h2>
-
-              <button
-                onClick={() => navigate('/myjobs')}
-                className='text-2xl font-bold'
-              >
-                ×
-              </button>
-
+                </div>
             </div>
 
-
-
-            {/* FORM */}
-
-            <div className='p-5 md:p-8'>
-
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-
-                {/* TITLE */}
-
-                <div>
-
-                  <label className='block mb-2 font-medium'>
-                    Job Title
-                  </label>
-
-                  <input
-                    type="text"
-                    name='title'
-                    value={jobData.title}
-                    onChange={handleChange}
-                    placeholder='Frontend Developer'
-                    className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
-                  />
-
-                </div>
-
-
-
-                {/* COMPANY */}
-
-                <div>
-
-                  <label className='block mb-2 font-medium'>
-                    Company
-                  </label>
-
-                  <input
-                    type="text"
-                    name='company'
-                    value={jobData.company}
-                    onChange={handleChange}
-                    placeholder='Google'
-                    className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
-                  />
-
-                </div>
-
-
-
-                {/* LOCATION */}
-
-                <div>
-
-                  <label className='block mb-2 font-medium'>
-                    Location
-                  </label>
-
-                  <input
-                    type="text"
-                    name='location'
-                    value={jobData.location}
-                    onChange={handleChange}
-                    placeholder='Bangalore'
-                    className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
-                  />
-
-                </div>
-
-
-
-                {/* SALARY */}
-
-                <div>
-
-                  <label className='block mb-2 font-medium'>
-                    Salary
-                  </label>
-
-                  <input
-                    type="text"
-                    name='salary'
-                    value={jobData.salary}
-                    onChange={handleChange}
-                    placeholder='5 LPA'
-                    className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
-                  />
-
-                </div>
-
-
-
-                {/* JOB TYPE */}
-
-                <div>
-
-                  <label className='block mb-2 font-medium'>
-                    Job Type
-                  </label>
-
-                  <select
-                    name='jobtype'
-                    value={jobData.jobtype}
-                    onChange={handleChange}
-                    className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
-                  >
-
-                    <option value="full-time">
-                      Full Time
-                    </option>
-
-                    <option value="part-time">
-                      Part Time
-                    </option>
-
-                    <option value="internship">
-                      Internship
-                    </option>
-
-                    <option value="remote">
-                      Remote
-                    </option>
-
-                  </select>
-
-                </div>
-
-
-
-                {/* REQUIREMENTS */}
-
-                <div>
-
-                  <label className='block mb-2 font-medium'>
-                    Requirements
-                  </label>
-
-                  <input
-                    type="text"
-                    name='requirements'
-                    value={jobData.requirements}
-                    onChange={handleChange}
-                    placeholder='React, Node.js'
-                    className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
-                  />
-
-                </div>
-
-              </div>
-
-
-
-              {/* DESCRIPTION */}
-
-              <div className='mt-5'>
-
-                <label className='block mb-2 font-medium'>
-                  Job Description
-                </label>
-
-                <textarea
-                  name='description'
-                  value={jobData.description}
-                  onChange={handleChange}
-                  rows={5}
-                  placeholder='Enter job description'
-                  className='w-full border rounded-lg p-3 outline-none focus:border-blue-500'
-                />
-
-              </div>
-
-
-
-              {/* BUTTONS */}
-
-              <div className='flex flex-col sm:flex-row gap-4 mt-8'>
-
-                <button
-                  onClick={handleAddJob}
-                  className='bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg w-full'
-                >
-
-                  Add Job
-
-                </button>
-
-                <button
-                  onClick={() => navigate('/myjobs')}
-                  className='bg-gray-300 hover:bg-gray-400 text-black py-3 px-6 rounded-lg w-full'
-                >
-
-                  Cancel
-
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-  );
+        </RecruiterLayout>
+    )
 }
 
 export default AddJob

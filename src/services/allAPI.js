@@ -7,6 +7,10 @@ export const registerAPI=async(userData)=>{
 export const loginAPI=async(userData)=>{
     return await apiService('POST','/login',userData)
 }
+//google login
+export const googleLoginAPI=async (userData)=>{
+    return await apiService("POST","/google-login",userData)
+}
 
 //all jobes
 
@@ -84,4 +88,9 @@ export const resetPasswordAPI = async (reqBody, reqHeader) => {
         reqHeader
     )
 
+}
+//AI job des
+
+export const getAIJobAPI = async (jobData) => {
+    return await apiService("POST", '/job-ai', jobData)
 }

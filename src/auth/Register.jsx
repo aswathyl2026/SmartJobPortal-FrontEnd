@@ -30,7 +30,15 @@ function Register() {
       toast.success("User successfully Registered")
 
     } else {
-      toast.error(result.response)
+        toast.error(
+
+    
+
+      "Registration Failed"
+
+    )
+
+  
     }
 
     setTimeout(() => {

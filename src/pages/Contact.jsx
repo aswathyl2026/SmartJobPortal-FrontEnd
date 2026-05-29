@@ -1,65 +1,154 @@
-import React from 'react'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
-import { FaEnvelope, FaLocationArrow, FaPaperPlane, FaPhone } from 'react-icons/fa'
+import React, { useRef } from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import {
+  FaEnvelope,
+  FaLocationArrow,
+  FaPaperPlane,
+  FaPhone,
+} from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import emailjs from "@emailjs/browser";
+
 function Contact() {
+  const form = useRef();
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+
+    const { name, email, message } = form.current;
+
+    if (name.value && email.value && message.value) {
+      emailjs
+        .sendForm(
+          import.meta.env.VITE_SERVICE_ID,
+          import.meta.env.VITE_TEMPLATE_ID,
+          form.current,
+          {
+            publicKey: import.meta.env.VITE_PUBLIC_KEY,
+          }
+        )
+        .then(
+          () => {
+            toast.success("Thanks for contacting us!");
+            name.value = "";
+            email.value = "";
+            message.value = "";
+          },
+          (error) => {
+            console.log(error.text);
+            toast.error("Failed to send message");
+          }
+        );
+    } else {
+      toast.warning("Please fill the form completely");
+    }
+  };
+
   return (
-    <div className="bg-[url('/home.png')]  bg-cover bg-center min-h-screen text-white">
-        <div className='bg-gradient-to-t from-blue-950/80 to-black/97 min-h-scree'>
-      <div className='bg-black/50 backdrop-blur-sm'>
-      <Header/>
-    </div>
+    <div className="bg-[url('/home.png')] bg-cover bg-center min-h-screen text-white">
+      <ToastContainer />
 
-      <div className="md:px-20 p-5 my-5">
-        <h1 className="font-bold my-5 text-3xl text-center">Contact</h1>
-        <p className='text-justify mx-20'>Have questions, feedback, or need help finding the perfect book? We’d love to hear from you! Why Contact Us? Order-related support Book availability inquiries Return/replacement queries Bulk/Institutional purchase requests Author or partnership inquiries. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Hic veniam id eveniet recusandae pariatur, facilis fuga? Iusto, asperiores modi cum praesentium et, libero nisi eaque harum sed deleniti odio eveniet. Maiores delectus iusto voluptatibus officia eveniet sunt quibusdam mollitia, error fugit laborum dolorum deserunt! Quaerat magni ad, veritatis dolor iusto, aliquam nisi consequatur officiis perferendis unde, maiores quos praesentium voluptatibus. Magni dolores impedit, officia doloribus repellat fuga quos ad natus recusandae sed numquam fugiat, sapiente minima, nam vero incidunt libero earum. Minima praesentium laborum tenetur corporis quod dolorum maxime pariatur.</p>
-        <div className="md:grid grid-cols-3 items-center md:px-50 p-20 md:mt-0">
-           <div className="flex items-center md:mx-5 my-5">
-            <div  style={{height:'50px',width:'50px',borderRadius:'50%'}}  className="flex items-center justify-center bg-gray-200">
-             <FaLocationArrow className='text-black'/>
-             </div>
-             <p className='ms-5 '>123 Main Street, Apt 40, London</p>   
-           </div> 
-
-           <div className="flex items-center md:mx-5 my-5">
-            <div  style={{height:'50px',width:'50px',borderRadius:'50%'}}  className="flex items-center justify-center bg-gray-200">
-             <FaPhone className='text-black'/>
-             </div>
-             <p className='ms-5 '>+1 5666 545562</p>   
-           </div>
-
-           <div className="flex items-center md:mx-5 my-5">
-            <div  style={{height:'50px',width:'50px',borderRadius:'50%'}}  className="flex items-center justify-center bg-gray-200">
-             <FaEnvelope className='text-black'/>
-             </div>
-             <p className='ms-5 '>contact@smartjob.com</p>   
-           </div>
+      <div className="bg-gradient-to-t from-blue-950/80 to-black/90 min-h-screen">
+        <div className="bg-black/50 backdrop-blur-sm">
+          <Header />
         </div>
-        <div className="md:grid grid-cols-2 p-5 my-5 gap-10 md:px-40">
-          <div className="p-5 bg-gray-100 text-center">
-            <h1 className="text-2xl font-semi-bold">Send Us Message</h1>
-            <form >
-              <input placeholder='Name' type="text" className="bg-white w-full p-2 mt-10 mb-5" />
-              <input placeholder='Email' type="text" className="bg-white w-full p-2  mb-5" />
-              <textarea placeholder="Message"type="text" className="bg-white w-full p-2  mb-5" />
-              <div className='my-5' >
-                 <button className="bg-black flex justify-center items-center text-white text-lg p-2 w-full">
-               Submit <FaPaperPlane className='ms-2'/>
-              </button>
+
+        {/* CONTENT */}
+        <div className="px-4 sm:px-8 md:px-16 lg:px-24 py-8">
+          <h1 className="font-bold text-2xl sm:text-3xl text-center mb-4">
+            Contact
+          </h1>
+
+          <p className="text-sm sm:text-base text-center max-w-4xl mx-auto">
+            Have questions, feedback, or need help finding the perfect job?
+            We’d love to hear from you!
+          </p>
+
+          {/* CONTACT INFO */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 text-sm sm:text-base">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full">
+                <FaLocationArrow className="text-black" />
               </div>
-             
-            </form>
+              <p>123 Main Street, London</p>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full">
+                <FaPhone className="text-black" />
+              </div>
+              <p>+1 5666 545562</p>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 flex items-center justify-center bg-gray-200 rounded-full">
+                <FaEnvelope className="text-black" />
+              </div>
+              <p>contact@smartjob.com</p>
+            </div>
           </div>
-          <div className="md:mt-0 mt-5">
-                  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d88899.59007591529!2d76.07214281031402!3d10.029734290867797!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080d514abec6bf%3A0xbd582caa5844192!2sKochi%2C%20Kerala!5e0!3m2!1sen!2sin!4v1776675199013!5m2!1sen!2sin" width="100%" height="450" style={{border:"0"}} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+
+          {/* FORM + MAP */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+
+            {/* FORM */}
+            <div className="bg-gray-100 text-black p-5 sm:p-8 rounded-lg">
+              <h1 className="text-xl sm:text-2xl font-semibold text-center">
+                Send Us Message
+              </h1>
+
+              <form ref={form} onSubmit={sendEmail} className="mt-6">
+                <input
+                  name="name"
+                  placeholder="Name"
+                  type="text"
+                  className="w-full p-3 mb-4 border rounded"
+                />
+
+                <input
+                  name="email"
+                  placeholder="Email"
+                  type="email"
+                  className="w-full p-3 mb-4 border rounded"
+                />
+
+                <textarea
+                  name="message"
+                  placeholder="Message"
+                  className="w-full p-3 mb-4 border rounded"
+                  rows="5"
+                />
+
+                <button className="bg-black text-white w-full py-3 flex justify-center items-center gap-2 rounded hover:bg-gray-800">
+                  Submit <FaPaperPlane />
+                </button>
+              </form>
+                <ToastContainer position='top-center' theme='colored' autoClose='3000' />
+            </div>
+
+            {/* MAP */}
+            <div className="w-full h-[300px] sm:h-[400px] lg:h-[450px]">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3926.4037197129736!2d76.3213563!3d9.4980676!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b089b0d3f6f4b0b%3A0x6d0c7b5c9b7f5b0a!2sAlappuzha%2C%20Kerala!5e0!3m2!1sen!2sin!4v1700000000000"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
           </div>
+        </div>
+
+        <div className="bg-black/50 backdrop-blur-sm mt-10">
+          <Footer />
+         
         </div>
       </div>
-      <div className='bg-black/50 backdrop-blur-sm'>
-      <Footer />
     </div>
-    </div></div>
-  )
+  );
 }
 
-export default Contact
+export default Contact;
