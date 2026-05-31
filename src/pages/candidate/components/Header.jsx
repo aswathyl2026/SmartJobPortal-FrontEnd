@@ -29,7 +29,7 @@ function Header() {
         if (!token) return
         const fetchProfile = async () => {
             try {
-                const res = await fetch(`http://localhost:3000/get-profile`, {
+                const res = await fetch(`https://smartjobportal-backend-sk7i.onrender.com/get-profile`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 const data = await res.json()
@@ -57,7 +57,7 @@ function Header() {
             const formData = new FormData()
             formData.append('picture', selectedFile)
 
-            const res = await fetch(`http://localhost:3000/update-profile`, {
+            const res = await fetch(`https://smartjobportal-backend-sk7i.onrender.com/update-profile`, {
                 method: 'PUT',
                 headers: { Authorization: `Bearer ${token}` },
                 body: formData
@@ -66,7 +66,7 @@ function Header() {
             const data = await res.json()
 
             if (data.success) {
-                const imageUrl = `http://localhost:3000/uploads/${data.data.picture}`
+                const imageUrl = `https://smartjobportal-backend-sk7i.onrender.com/uploads/${data.data.picture}`
                 setProfileImage(imageUrl)
                 handleModalClose()
                 toast.success('Profile photo updated successfully!')

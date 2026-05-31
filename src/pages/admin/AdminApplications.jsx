@@ -103,7 +103,7 @@ function AdminApplications() {
                   <td className="px-5 py-4">
                     {a.resume ? (
                       <a
-                        href={`http://localhost:3000/uploads/${a.resume}`}
+                        href={`https://smartjobportal-backend-sk7i.onrender.com/uploads/${a.resume}`}
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex items-center gap-1 text-blue-600 hover:underline text-xs font-medium"

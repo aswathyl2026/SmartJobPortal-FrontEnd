@@ -93,7 +93,7 @@ function RecruiterLayout({ children }) {
                             src={
                                 user?.picture
                                     ?
-                                    `http://localhost:3000/uploads/${user.picture}?t=${Date.now()}`
+                                    `https://smartjobportal-backend-sk7i.onrender.com/uploads/${user.picture}?t=${Date.now()}`
                                     :
                                     "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
                             }

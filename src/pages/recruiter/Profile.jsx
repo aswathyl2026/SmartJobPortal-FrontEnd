@@ -25,7 +25,7 @@ function Profile() {
 
             ?
 
-            `http://localhost:3000/uploads/${user.picture}`
+            `https://smartjobportal-backend-sk7i.onrender.com/uploads/${user.picture}`
 
             :
 
@@ -191,7 +191,7 @@ function Profile() {
 
                 ?
 
-                `http://localhost:3000/uploads/${updatedUser.picture}?t=${Date.now()}`
+                `https://smartjobportal-backend-sk7i.onrender.com/${updatedUser.picture}?t=${Date.now()}`
 
                 :
 

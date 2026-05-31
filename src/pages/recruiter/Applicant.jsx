@@ -380,7 +380,7 @@ function Applicant() {
                                             <button
                                                 onClick={() =>
                                                     window.open(
-                                                        `http://localhost:3000/uploads/${item.resume}`
+                                                        `https://smartjobportal-backend-sk7i.onrender.com/uploads/${item.resume}`
                                                     )
                                                 }
                                                 className='text-red-500 px-4 py-2 rounded-lg'
