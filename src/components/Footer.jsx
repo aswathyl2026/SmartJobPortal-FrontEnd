@@ -4,7 +4,7 @@ import { FaArrowRight, FaEnvelope, FaFacebook, FaInstagram, FaTwitter } from 're
 function Footer() {
   return (
     <>
-    <div className='md:grid grid-cols-3 md:gap-10 text-white p-10'>
+    <div className='md:grid grid-cols-3 md:gap-10  p-10'>
        <div>
         <h4 className="font-bold">ABOUT US</h4>
         <p className='text-justify mt-5'>Welcome to SMART JOB, a modern job portal and hiring management platform designed to connect talented candidates with top recruiters efficiently and seamlessly.

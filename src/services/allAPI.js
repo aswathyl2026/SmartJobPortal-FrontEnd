@@ -94,3 +94,60 @@ export const resetPasswordAPI = async (reqBody, reqHeader) => {
 export const getAIJobAPI = async (jobData) => {
     return await apiService("POST", '/job-ai', jobData)
 }
+
+// ── ADMIN APIs ────────────────────────────────────────────────────
+
+// Get all users
+export const adminGetAllUsersAPI = async () => {
+    return await apiService('GET', '/admin/users', {})
+}
+
+// Delete a user
+export const adminDeleteUserAPI = async (userId) => {
+    return await apiService('DELETE', `/admin/delete-user/${userId}`, {})
+}
+
+// Block / Unblock a user
+export const adminToggleBlockUserAPI = async (userId) => {
+    return await apiService('PUT', `/admin/block-user/${userId}`, {})
+}
+
+// Get all recruiters
+export const adminGetAllRecruitersAPI = async () => {
+    return await apiService('GET', '/admin/recruiters', {})
+}
+
+// Delete a recruiter
+export const adminDeleteRecruiterAPI = async (userId) => {
+    return await apiService('DELETE', `/admin/delete-user/${userId}`, {})
+}
+
+// Block / Unblock a recruiter
+export const adminToggleBlockRecruiterAPI = async (userId) => {
+    return await apiService('PUT', `/admin/block-user/${userId}`, {})
+}
+
+// Get all jobs (admin view)
+export const adminGetAllJobsAPI = async () => {
+    return await apiService('GET', '/admin/jobs', {})
+}
+
+// Delete a job (admin)
+export const adminDeleteJobAPI = async (jobId) => {
+    return await apiService('DELETE', `/admin/delete-job/${jobId}`, {})
+}
+
+// Get all applications (admin view)
+export const adminGetAllApplicationsAPI = async () => {
+    return await apiService('GET', '/admin/applications', {})
+}
+
+// Delete an application (admin)
+export const adminDeleteApplicationAPI = async (appId) => {
+    return await apiService('DELETE', `/admin/delete-application/${appId}`, {})
+}
+
+// Get dashboard stats
+export const adminGetStatsAPI = async () => {
+    return await apiService('GET', '/admin/stats', {})
+}

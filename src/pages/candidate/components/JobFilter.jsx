@@ -1,13 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 function JobFilter({ onFilter }) {
+  const [searchParams] = useSearchParams()
 
+  // Seed initial state from URL params if coming from Home search
   const [filters, setFilters] = useState({
-    keyword: "",
-    location: "",
-    jobType: [],
-    salary: 100000
+    keyword:  searchParams.get('keyword')  || '',
+    location: searchParams.get('location') || '',
+    jobType:  [],
+    salary:   100000,
   })
+
+  // Auto-apply on mount if URL params exist
+  useEffect(() => {
+    if (searchParams.get('keyword') || searchParams.get('location')) {
+      onFilter(filters)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value })
@@ -16,20 +27,15 @@ function JobFilter({ onFilter }) {
   const handleJobType = (e) => {
     const { value, checked } = e.target
     let updated = [...filters.jobType]
-    if (checked) {
-      updated.push(value)
-    } else {
-      updated = updated.filter(item => item !== value)
-    }
+    if (checked) updated.push(value)
+    else updated = updated.filter((item) => item !== value)
     setFilters({ ...filters, jobType: updated })
   }
 
-  const applyFilters = () => {
-    onFilter(filters)
-  }
+  const applyFilters = () => onFilter(filters)
 
   const resetFilters = () => {
-    const reset = { keyword: "", location: "", jobType: [], salary: 100000 }
+    const reset = { keyword: '', location: '', jobType: [], salary: 100000 }
     setFilters(reset)
     onFilter(reset)
   }
@@ -67,43 +73,25 @@ function JobFilter({ onFilter }) {
         </select>
       </div>
 
-      {/* JOB TYPE — values must match exactly what's in MongoDB */}
+      {/* JOB TYPE */}
       <div className="mb-4">
         <h3 className="font-bold mb-2">Job Type</h3>
         <div className="flex flex-col gap-2">
-
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              value="full-time"     // ✅ matches DB value
-              checked={filters.jobType.includes("full-time")}
-              onChange={handleJobType}
-            />
-            Full Time
-          </label>
-
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              value="part-time"     // ✅ matches DB value
-              checked={filters.jobType.includes("part-time")}
-              onChange={handleJobType}
-            />
-            Part Time
-          </label>
-
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              value="remote"        // ✅ matches DB value (AddJob saves "remote")
-              checked={filters.jobType.includes("remote")}
-              onChange={handleJobType}
-            />
-            Work From Home
-          </label>
-
-        
-
+          {[
+            { value: 'full-time', label: 'Full Time' },
+            { value: 'part-time', label: 'Part Time' },
+            { value: 'remote',    label: 'Work From Home' },
+          ].map(({ value, label }) => (
+            <label key={value} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                value={value}
+                checked={filters.jobType.includes(value)}
+                onChange={handleJobType}
+              />
+              {label}
+            </label>
+          ))}
         </div>
       </div>
 
@@ -118,7 +106,7 @@ function JobFilter({ onFilter }) {
           onChange={(e) => setFilters({ ...filters, salary: e.target.value })}
           className="w-full"
         />
-        <p className="text-sm text-gray-500">Max: ₹{filters.salary}</p>
+        <p className="text-sm text-gray-500">Max: ₹{Number(filters.salary).toLocaleString('en-IN')}</p>
       </div>
 
       {/* BUTTONS */}
